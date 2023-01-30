@@ -7,6 +7,7 @@ import (
 	"thucidol/middleware"
 	restaurantmodel "thucidol/module/restaurant/model"
 	ginrestaurant "thucidol/module/restaurant/transport/gintransport"
+	"thucidol/module/restaurantlike/transport/ginrstlike"
 	ginuser "thucidol/module/user/transport/ginuser"
 	"thucidol/upload/transport/ginupload"
 
@@ -65,4 +66,8 @@ func setupRoute(appCtx appctx.AppContext, v1 *gin.RouterGroup) {
 	})
 
 	restaurants.DELETE("/:id", ginrestaurant.DeleteRestaurant(appCtx))
+
+	restaurants.POST("/:id/like", ginrstlike.UserLikeRestaurant(appCtx))
+	restaurants.DELETE("/:id/dislike", ginrstlike.UserDislikeRestaurant(appCtx))
+	restaurants.GET("/:id/liked-users", ginrstlike.ListUser(appCtx))
 }

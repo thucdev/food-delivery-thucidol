@@ -9,7 +9,6 @@ import (
 	restaurantmodel "thucidol/module/restaurant/model"
 	restaurantrepo "thucidol/module/restaurant/repository"
 	restaurantstorage "thucidol/module/restaurant/storage"
-	restaurantlikestore "thucidol/module/restaurantlike/store"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,8 +31,8 @@ func ListRestaurant(appCtx appctx.AppContext) gin.HandlerFunc {
 		db := appCtx.GetMainDbConnection()
 
 		store := restaurantstorage.NewSQLStore(db)
-		likeStore := restaurantlikestore.NewSQLStore(db)
-		repo := restaurantrepo.NewListRestaurantRepo(store, likeStore)
+		// likeStore := restaurantlikestore.NewSQLStore(db)
+		repo := restaurantrepo.NewListRestaurantRepo(store)
 		biz := restaurantbiz.NewListRestaurantBiz(repo)
 
 		result, err := biz.ListRestaurant(c.Request.Context(), &filter, &pagingData)
