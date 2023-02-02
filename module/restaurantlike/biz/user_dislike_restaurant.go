@@ -2,7 +2,8 @@ package restaurantlikebiz
 
 import (
 	"context"
-	"thucidol/common"
+	"log"
+	"thucidol/component/asyncjob"
 	restaurantlikemodel "thucidol/module/restaurantlike/model"
 )
 
@@ -30,13 +31,21 @@ func (biz *userDislikeRestaurantBiz) DislikeRestaurant(ctx context.Context, user
 		return restaurantlikemodel.ErrCanNotUnlikeRestaurant(err)
 	}
 
-	go func() {
-		defer common.AppRecover()
-		if err := biz.decStore.DecreaseLikeCount(ctx, restaurantId); err != nil {
-			panic(err)
-		}
+	j := asyncjob.NewJob(func(ctx context.Context) error {
+		return biz.decStore.DecreaseLikeCount(ctx, restaurantId)
+	})
 
-	}()
+	if err := asyncjob.NewGroup(true, j).Run(ctx); err != nil {
+		log.Println(err)
+	}
+
+	// go func() {
+	// 	defer common.AppRecover()
+	// 	if err := biz.decStore.DecreaseLikeCount(ctx, restaurantId); err != nil {
+	// 		panic(err)
+	// 	}
+
+	// }()
 
 	return nil
 }

@@ -3,6 +3,7 @@ package restaurantlikebiz
 import (
 	"context"
 	"log"
+	"thucidol/component/asyncjob"
 	restaurantlikemodel "thucidol/module/restaurantlike/model"
 )
 
@@ -30,9 +31,17 @@ func (biz *userLikeRestaurantBiz) LikeRestaurant(ctx context.Context, data *rest
 		return restaurantlikemodel.ErrCanNotLikeRestaurant(err)
 	}
 
-	if err := biz.incStore.IncreaseLikeCount(ctx, data.RestaurantId); err != nil {
+	j := asyncjob.NewJob(func(ctx context.Context) error {
+		return biz.incStore.IncreaseLikeCount(ctx, data.RestaurantId)
+	})
+
+	if err := asyncjob.NewGroup(true, j).Run(ctx); err != nil {
 		log.Println(err)
 	}
+
+	// if err := biz.incStore.IncreaseLikeCount(ctx, data.RestaurantId); err != nil {
+	// 	log.Println(err)
+	// }
 
 	return nil
 }
