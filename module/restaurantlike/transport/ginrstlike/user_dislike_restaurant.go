@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"thucidol/common"
 	"thucidol/component/appctx"
-	restaurantstorage "thucidol/module/restaurant/storage"
 	restaurantlikebiz "thucidol/module/restaurantlike/biz"
 	restaurantlikestore "thucidol/module/restaurantlike/store"
 
@@ -22,8 +21,9 @@ func UserDislikeRestaurant(appCtx appctx.AppContext) gin.HandlerFunc {
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
 
 		store := restaurantlikestore.NewSQLStore(appCtx.GetMainDbConnection())
-		decStore := restaurantstorage.NewSQLStore(appCtx.GetMainDbConnection())
-		biz := restaurantlikebiz.NewUserDislikeRestaurantBiz(store, decStore)
+		// decStore := restaurantstorage.NewSQLStore(appCtx.GetMainDbConnection())
+
+		biz := restaurantlikebiz.NewUserDislikeRestaurantBiz(store, appCtx.GetPubSub())
 
 		if err := biz.DislikeRestaurant(c.Request.Context(), requester.GetUserId(), int(uid.GetLocalID())); err != nil {
 			panic(err)

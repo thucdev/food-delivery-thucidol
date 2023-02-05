@@ -8,7 +8,9 @@ const (
 )
 
 const (
-	CurrentUser = "user"
+	CurrentUser                = "user"
+	TopicUserLikeRestaurant    = "TopicUserLikeRestaurant"
+	TopicUserDislikeRestaurant = "TopicUserDislikeRestaurant"
 )
 
 type Requester interface {

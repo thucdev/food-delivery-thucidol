@@ -11,6 +11,8 @@ import (
 
 	"thucidol/component/appctx"
 	"thucidol/middleware"
+	"thucidol/pubsub/localpubsub"
+	"thucidol/subscriber"
 )
 
 func main() {
@@ -26,8 +28,12 @@ func main() {
 
 	fmt.Println(db, err)
 	fmt.Println("? Connected Successfully to the Database")
+	ps := localpubsub.NewPubSub()
+	appCtx := appctx.NewAppCtx(db, secretKey, ps)
 
-	appCtx := appctx.NewAppCtx(db, secretKey)
+	//setup subscriber
+	// subscriber.Setup(appCtx,context.Background())
+	_ = subscriber.NewEngine(appCtx).Start()
 
 	r := gin.Default()
 	r.Use(middleware.Recover(appCtx))
